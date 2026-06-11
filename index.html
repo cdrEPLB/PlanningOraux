@@ -1,0 +1,1534 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Affectation et ordre de passage</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      margin: 24px;
+      color: #1f2937;
+      background: #f7fee7;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: #166534;
+    }
+
+    h2 {
+      margin-top: 24px;
+      color: #ea580c;
+    }
+
+    .muted {
+      color: #64748b;
+      font-size: .95rem;
+    }
+
+    .actions, .params-card {
+      padding: 16px;
+      border: 1px solid #86efac;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(22, 101, 52, 0.10);
+      margin: 16px 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .params-card {
+      display: block;
+    }
+
+    .param-row {
+      display: grid;
+      grid-template-columns: 110px repeat(3, minmax(210px, auto));
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #bbf7d0;
+    }
+
+    .param-row:last-child {
+      border-bottom: none;
+    }
+
+    .param-title {
+      font-weight: 700;
+      color: #166534;
+    }
+
+    button, input, select {
+      padding: 8px 10px;
+      border: 1px solid #fdba74;
+      border-radius: 10px;
+      font-size: .95rem;
+    }
+
+    button {
+      background: #16a34a;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: #15803d;
+    }
+
+    button:disabled {
+      background: #d9f99d;
+      color: #64748b;
+      cursor: not-allowed;
+      border-color: #d9f99d;
+    }
+
+    .ordre-btn {
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: .85rem;
+      background: #ea580c;
+      border-color: #fdba74;
+    }
+
+    .ordre-btn:hover {
+      background: #c2410c;
+    }
+
+    .ajout-btn {
+      padding: 4px 9px;
+      border-radius: 8px;
+      font-size: .85rem;
+      background: #2563eb;
+      border-color: #93c5fd;
+    }
+
+    .ajout-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .choix select {
+      min-width: 145px;
+    }
+
+    .liste-actions {
+      display: flex;
+      gap: 6px;
+      white-space: nowrap;
+      align-items: center;
+    }
+
+    .liste-actions button {
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: .85rem;
+    }
+
+    .gestion-choix {
+      align-items: center;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .drop-zone {
+      border: 2px dashed #16a34a;
+      border-radius: 18px;
+      padding: 30px;
+      text-align: center;
+      background: #dcfce7;
+      transition: background .15s, border-color .15s;
+      cursor: pointer;
+    }
+
+	.drop-container {
+	  display: flex;
+	  gap: 20px;
+	  flex-wrap: wrap;
+	}
+
+	.drop-container .drop-zone {
+	  flex: 1;
+	  min-width: 260px;
+	}
+
+	#dropZoneCSV {
+	  border-color: #2563eb;
+	  background: #dbeafe;
+	}
+
+    .drop-zone.dragover {
+      background: #bbf7d0;
+      border-color: #ea580c;
+    }
+
+    .drop-zone strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #166534;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 16px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    }
+
+    th, td {
+      border: 1px solid #bbf7d0;
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #16a34a;
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:nth-child(even) {
+      background: #fff7ed;
+    }
+
+    .choix {
+      display: flex;
+      gap: 18px;
+      white-space: nowrap;
+    }
+
+    .ordre {
+      display: flex;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .small-input {
+      width: 70px;
+    }
+
+    .date-input {
+      width: 190px;
+    }
+
+    @media (max-width: 900px) {
+      .param-row {
+        grid-template-columns: 1fr;
+      }
+
+      label {
+        flex-wrap: wrap;
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="titreEpreuvePrincipal" style="text-align:center;">Nom de l’épreuve</h1>
+  <p class="muted" style="text-align:center;">Lycée Agricole du Bourbonnais</p>
+
+	<div class="drop-container">
+	  <div id="csvDropZone" class="drop-zone">
+		<strong>Dépose l’export CSV Pronote ici</strong>
+		<span class="muted">ou clique pour sélectionner un fichier .csv : converti au format Excel après enregistrement</span>
+		<input type="file" id="csvFileInput" accept=".csv,text/csv" hidden>
+	  </div>
+	  <div id="dropZone" class="drop-zone">
+		<strong>Dépose le fichier Excel ici (fichier déjà enregistré pour modifications)</strong>
+		<span class="muted">ou clique pour sélectionner un fichier .xlsx / .xls</span>
+		<input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+	  </div>
+	 </div>
+  <h2>Paramètres du planning</h2>
+
+  <div class="params-card">
+    <div class="param-row">
+      <span class="param-title">Détails</span>
+
+      <label>
+        Classe :
+        <input id="classe" class="date-input" type="text" value="">
+      </label>
+
+      <label>
+        Année scolaire :
+        <input id="anneeScolaire" class="date-input" type="text" value="">
+      </label>
+
+      <label>
+        Épreuve :
+        <input id="epreuve" class="date-input" type="text" value="">
+      </label>
+    </div>
+
+    <div class="param-row">
+      <span class="param-title">Jour 1</span>
+
+      <label>
+        Date :
+        <input id="date1" class="date-input" type="date" value="">
+      </label>
+
+      <label>
+        Matin :
+        <input id="date1MatinDebut" type="time" value="">
+        à
+        <input id="date1MatinFin" type="time" value="">
+      </label>
+
+      <label>
+        Après-midi :
+        <input id="date1ApremDebut" type="time" value="">
+        à
+        <input id="date1ApremFin" type="time" value="">
+      </label>
+    </div>
+
+    <div class="param-row">
+      <span class="param-title">Jour 2</span>
+
+      <label>
+        Date :
+        <input id="date2" class="date-input" type="date" value="">
+      </label>
+
+      <label>
+        Matin :
+        <input id="date2MatinDebut" type="time" value="">
+        à
+        <input id="date2MatinFin" type="time" value="">
+      </label>
+
+      <label>
+        Après-midi :
+        <input id="date2ApremDebut" type="time" value="">
+        à
+        <input id="date2ApremFin" type="time" value="">
+      </label>
+    </div>
+
+    <div class="param-row">
+      <span class="param-title">Passage</span>
+
+      <label>
+        Temps par élève :
+        <input id="dureeEleveMinutes" class="small-input" type="number" value="20" min="1">
+        min
+      </label>
+    </div>
+
+    <div class="param-row">
+      <span class="param-title">Pause</span>
+
+      <label>
+        Durée :
+        <input id="pauseMinutes" class="small-input" type="number" value="" min="0">
+        min
+      </label>
+
+      <label>
+        Tous les :
+        <input id="elevesAvantPause" class="small-input" type="number" value="" min="1">
+        élèves
+      </label>
+    </div>
+
+    <div class="param-row">
+      <span class="param-title">Choix</span>
+
+      <label>
+        Choix 1 :
+        <input id="libelleChoix1" class="date-input" type="text" value="Choix 1">
+      </label>
+
+      <label>
+        Choix 2 :
+        <input id="libelleChoix2" class="date-input" type="text" value="Choix 2">
+      </label>
+    </div>
+
+    <div class="param-row">
+      <span class="param-title">Priorité</span>
+
+      <label>
+        Organisation du planning :
+        <select id="prioritePlanning" class="date-input">
+          <option value="alphabetique">Classement par ordre alphabétique</option>
+          <option value="alphabetique_inverse">Classement par ordre alphabétique inverse</option>
+          <option value="aleatoire">Classement aléatoire</option>
+          <option value="alternance">Alternance choix 1 / choix 2</option>
+          <option value="choix2">Priorité au choix 2</option>
+          <option value="choix1" selected>Priorité au choix 1</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="planningBtn" disabled>Afficher le planning</button>
+    <button id="downloadBtn" disabled>Enregistrer (format Excel)</button>
+    <button id="undoBtn" disabled>Annuler la dernière action</button>
+    <button id="resetChoixBtn" disabled>Réinitialiser les choix élèves</button>
+  </div>
+
+  <table id="table" hidden>
+    <thead>
+      <tr>
+        <th>Liste</th>
+        <th>Statut</th>
+        <th>Choix</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2 id="planningTitle" hidden>Planning de passage</h2>
+  <p id="planningInfo" class="muted" hidden></p>
+
+  <table id="planningTable" hidden>
+    <thead>
+      <tr>
+        <th>Ordre</th>
+        <th>Date</th>
+        <th>Heure</th>
+        <th>Élève</th>
+        <th>Statut</th>
+        <th>Matière</th>
+        <th>Émargement</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    let workbook = null;
+    let worksheet = null;
+    let sheetName = null;
+    let originalFileName = "fichier_modifie.xlsx";
+    let donneesEleves = [];
+    let planning = [];
+    let planningWindow = null;
+    let historiqueActions = [];
+
+    const fileInput = document.getElementById("fileInput");
+    const csvFileInput = document.getElementById("csvFileInput");
+    const dropZone = document.getElementById("dropZone");
+    const csvDropZone = document.getElementById("csvDropZone");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const regroupBtn = document.getElementById("regroupBtn");
+    const planningBtn = document.getElementById("planningBtn");
+    const pdfBtn = document.getElementById("pdfBtn");
+    const resetChoixBtn = document.getElementById("resetChoixBtn");
+    const undoBtn = document.getElementById("undoBtn");
+    const planningTitle = document.getElementById("planningTitle");
+    const planningInfo = document.getElementById("planningInfo");
+    const planningTable = document.getElementById("planningTable");
+    const planningTbody = planningTable.querySelector("tbody");
+    const table = document.getElementById("table");
+    const tbody = table.querySelector("tbody");
+
+    function statutCourt(valeur) {
+      const texte = String(valeur ?? "").trim().toLowerCase();
+      if (texte.startsWith("demi-pensionnaire")) return "DP";
+      if (texte.startsWith("interne")) return "INT";
+      return valeur ?? "";
+    }
+
+    function nomFichierModifie(nom) {
+      return nom.replace(/\.(xlsx|xls|csv)$/i, "") + "_modifie.xlsx";
+    }
+
+    function echapperHTML(valeur) {
+      return String(valeur ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function minutesDepuisMinuit(heure) {
+      const [h, m] = heure.split(":").map(Number);
+      return h * 60 + m;
+    }
+
+    function heureDepuisMinutes(minutes) {
+      const h = Math.floor(minutes / 60);
+      const m = minutes % 60;
+      return String(h).padStart(2, "0") + "h" + String(m).padStart(2, "0");
+    }
+
+    function formaterDateFR(valeurDate) {
+      if (!valeurDate) return "";
+      const morceaux = valeurDate.split("-");
+      if (morceaux.length !== 3) return valeurDate;
+
+      const date = new Date(Number(morceaux[0]), Number(morceaux[1]) - 1, Number(morceaux[2]));
+      return date.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+    }
+
+    function valeur(id) {
+      return document.getElementById(id).value;
+    }
+
+    function definirValeur(id, valeurChamp) {
+      const champ = document.getElementById(id);
+      if (champ) champ.value = valeurChamp ?? "";
+    }
+
+    function titreEpreuve() {
+      const titre = String(valeur("epreuve") || "").trim();
+      return titre || "Nom de l’épreuve";
+    }
+
+    function mettreAJourTitresEpreuve() {
+      const titre = titreEpreuve();
+      const titrePrincipal = document.getElementById("titreEpreuvePrincipal");
+      if (titrePrincipal) titrePrincipal.textContent = titre;
+      document.title = titre;
+    }
+
+    function copierEtatCourant() {
+      return {
+        donneesEleves: JSON.parse(JSON.stringify(donneesEleves)),
+        choixBase: choixBase.slice(),
+        choixPersonnalises: choixPersonnalises.slice(),
+        planning: JSON.parse(JSON.stringify(planning))
+      };
+    }
+
+    function enregistrerActionPourAnnulation() {
+      historiqueActions.push(copierEtatCourant());
+      if (historiqueActions.length > 30) historiqueActions.shift();
+      if (undoBtn) undoBtn.disabled = false;
+    }
+
+    function restaurerDerniereAction() {
+      const etat = historiqueActions.pop();
+      if (!etat) return;
+      donneesEleves = etat.donneesEleves;
+      choixBase = etat.choixBase;
+      choixPersonnalises = etat.choixPersonnalises;
+      planning = etat.planning;
+      synchroniserListeDansWorksheet();
+      afficherEleves();
+      if (planning.length) ouvrirOngletPlanning([]); else reinitialiserPlanning();
+      if (undoBtn) undoBtn.disabled = historiqueActions.length === 0;
+    }
+
+    function normaliserTexte(valeur) {
+      return String(valeur ?? "")
+        .replace(/^\uFEFF/, "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase();
+    }
+
+    function parserCSVPronote(texte) {
+      const lignes = [];
+      let ligne = [];
+      let champ = "";
+      let dansGuillemets = false;
+
+      for (let i = 0; i < texte.length; i++) {
+        const caractere = texte[i];
+        const suivant = texte[i + 1];
+
+        if (caractere === '"') {
+          if (dansGuillemets && suivant === '"') {
+            champ += '"';
+            i++;
+          } else {
+            dansGuillemets = !dansGuillemets;
+          }
+        } else if (caractere === ";" && !dansGuillemets) {
+          ligne.push(champ);
+          champ = "";
+        } else if ((caractere === "\n" || caractere === "\r") && !dansGuillemets) {
+          if (caractere === "\r" && suivant === "\n") i++;
+          ligne.push(champ);
+          if (ligne.some(cellule => String(cellule).trim() !== "")) lignes.push(ligne);
+          ligne = [];
+          champ = "";
+        } else {
+          champ += caractere;
+        }
+      }
+
+      ligne.push(champ);
+      if (ligne.some(cellule => String(cellule).trim() !== "")) lignes.push(ligne);
+      return lignes;
+    }
+
+    function indexColonne(headers, nomsPossibles) {
+      const headersNormalises = headers.map(normaliserTexte);
+      return headersNormalises.findIndex(header => nomsPossibles.includes(header));
+    }
+
+    function trouverColonneInfosPronote(headers, lignes) {
+      const indexEncouragement = indexColonne(headers, ["encouragement/valorisation", "encouragement valorisation"]);
+      const indexSortie = indexColonne(headers, ["sortie"]);
+      const departRecherche = indexSortie === -1 ? 0 : indexSortie + 1;
+
+      for (let i = departRecherche; i < headers.length; i++) {
+        if (normaliserTexte(headers[i]) === "") {
+          const contientInfos = lignes.some(ligne => normaliserTexte(ligne[i]) !== "");
+          if (contientInfos) return i;
+        }
+      }
+
+      return indexEncouragement;
+    }
+
+    function creerWorkbookDepuisCSVPronote(lignesCSV) {
+      if (lignesCSV.length < 2) {
+        throw new Error("Le CSV ne contient pas assez de lignes.");
+      }
+
+      const headers = lignesCSV[0];
+      const lignes = lignesCSV.slice(1);
+      const indexEleves = indexColonne(headers, ["eleves", "eleve", "nom prenom", "nom"]);
+      const indexRegime = indexColonne(headers, ["regime"]);
+      const indexInfos = trouverColonneInfosPronote(headers, lignes);
+
+      if (indexEleves === -1 || indexRegime === -1) {
+        throw new Error("Colonnes Pronote introuvables : le CSV doit contenir au minimum « Élèves » et « Régime ».");
+      }
+
+      const lignesExcel = [["Élèves", "Sujet", "", "Régime"]];
+
+      lignes.forEach(ligne => {
+        const nom = String(ligne[indexEleves] ?? "").trim();
+        if (!nom) return;
+
+        lignesExcel.push([
+          nom,
+          "",
+          indexInfos === -1 ? "" : String(ligne[indexInfos] ?? "").trim(),
+          String(ligne[indexRegime] ?? "").trim()
+        ]);
+      });
+
+      const nouveauWorkbook = XLSX.utils.book_new();
+      const nouvelleWorksheet = XLSX.utils.aoa_to_sheet(lignesExcel);
+      XLSX.utils.book_append_sheet(nouveauWorkbook, nouvelleWorksheet, "Liste");
+
+      return nouveauWorkbook;
+    }
+
+    async function chargerCSVPronote(file) {
+      if (!file) return;
+
+      if (!/\.csv$/i.test(file.name)) {
+        alert("Merci de déposer un fichier CSV Pronote .csv");
+        return;
+      }
+
+      try {
+        const texte = await file.text();
+        const lignesCSV = parserCSVPronote(texte);
+        workbook = creerWorkbookDepuisCSVPronote(lignesCSV);
+        sheetName = workbook.SheetNames[0];
+        worksheet = workbook.Sheets[sheetName];
+        originalFileName = nomFichierModifie(file.name);
+
+        chargerDonneesDepuisWorksheet();
+      } catch (erreur) {
+        alert("Impossible de convertir le CSV Pronote : " + erreur.message);
+      }
+    }
+
+    function ajouterCreneauSiValide(creneaux, date, debut, fin, groupe) {
+      if (date && debut && fin && debut < fin) {
+        creneaux.push({
+          date,
+          dateAffichee: formaterDateFR(date),
+          debut,
+          fin,
+          groupe
+        });
+      }
+    }
+
+    function lireParametresPlanning() {
+      const creneaux = [];
+
+      ajouterCreneauSiValide(creneaux, valeur("date1"), valeur("date1MatinDebut"), valeur("date1MatinFin"), "Date 1");
+      ajouterCreneauSiValide(creneaux, valeur("date1"), valeur("date1ApremDebut"), valeur("date1ApremFin"), "Date 1");
+      ajouterCreneauSiValide(creneaux, valeur("date2"), valeur("date2MatinDebut"), valeur("date2MatinFin"), "Date 2");
+      ajouterCreneauSiValide(creneaux, valeur("date2"), valeur("date2ApremDebut"), valeur("date2ApremFin"), "Date 2");
+
+      return {
+        classe: valeur("classe"),
+        anneeScolaire: valeur("anneeScolaire"),
+        epreuve: valeur("epreuve"),
+        creneaux,
+        dureeEleveMinutes: Math.max(1, Number(valeur("dureeEleveMinutes") || 20)),
+        pauseMinutes: Number(valeur("pauseMinutes") || 0),
+        elevesAvantPause: Number(valeur("elevesAvantPause") || 0),
+        libelleChoix1: libelleChoix1(),
+        libelleChoix2: libelleChoix2(),
+        prioritePlanning: valeur("prioritePlanning") || "choix1"
+      };
+    }
+
+    function planningUtiliseDate2() {
+      return planning.some(p => p.groupe === "Date 2");
+    }
+
+    function enregistrerParametresDansExcel() {
+      if (!workbook) return;
+
+      const params = lireParametresPlanning();
+
+      const lignes = [
+        ["Paramètre", "Valeur"],
+        ["Classe", params.classe],
+        ["Année scolaire", params.anneeScolaire],
+        ["Épreuve", params.epreuve],
+        ["Temps par élève en minutes", params.dureeEleveMinutes],
+        ["Pause en minutes", params.pauseMinutes],
+        ["Pause tous les X élèves", params.elevesAvantPause],
+        ["Libellé choix 1", params.libelleChoix1],
+        ["Libellé choix 2", params.libelleChoix2],
+        ["Priorité planning", params.prioritePlanning],
+        ["Date 1", valeur("date1")],
+        ["Date 1 matin début", valeur("date1MatinDebut")],
+        ["Date 1 matin fin", valeur("date1MatinFin")],
+        ["Date 1 après-midi début", valeur("date1ApremDebut")],
+        ["Date 1 après-midi fin", valeur("date1ApremFin")],
+        ["Date 2", valeur("date2")],
+        ["Date 2 matin début", valeur("date2MatinDebut")],
+        ["Date 2 matin fin", valeur("date2MatinFin")],
+        ["Date 2 après-midi début", valeur("date2ApremDebut")],
+        ["Date 2 après-midi fin", valeur("date2ApremFin")]
+      ];
+
+      const feuilleParametres = XLSX.utils.aoa_to_sheet(lignes);
+
+      if (workbook.SheetNames.includes("Paramètres")) {
+        workbook.Sheets["Paramètres"] = feuilleParametres;
+      } else {
+        XLSX.utils.book_append_sheet(workbook, feuilleParametres, "Paramètres");
+      }
+    }
+
+    function chargerParametresDepuisExcel() {
+      if (!workbook || !workbook.Sheets["Paramètres"]) return;
+
+      const lignes = XLSX.utils.sheet_to_json(workbook.Sheets["Paramètres"], {
+        header: 1,
+        defval: ""
+      });
+
+      const params = {};
+      lignes.slice(1).forEach(ligne => {
+        params[String(ligne[0] ?? "").trim()] = ligne[1];
+      });
+
+      const correspondances = {
+        "Classe": "classe",
+        "Année scolaire": "anneeScolaire",
+        "Épreuve": "epreuve",
+        "Temps par élève en minutes": "dureeEleveMinutes",
+        "Pause en minutes": "pauseMinutes",
+        "Pause tous les X élèves": "elevesAvantPause",
+        "Libellé choix 1": "libelleChoix1",
+        "Libellé choix 2": "libelleChoix2",
+        "Priorité planning": "prioritePlanning",
+        "Date 1": "date1",
+        "Date 1 matin début": "date1MatinDebut",
+        "Date 1 matin fin": "date1MatinFin",
+        "Date 1 après-midi début": "date1ApremDebut",
+        "Date 1 après-midi fin": "date1ApremFin",
+        "Date 2": "date2",
+        "Date 2 matin début": "date2MatinDebut",
+        "Date 2 matin fin": "date2MatinFin",
+        "Date 2 après-midi début": "date2ApremDebut",
+        "Date 2 après-midi fin": "date2ApremFin"
+      };
+
+      Object.entries(correspondances).forEach(([nomParametre, idChamp]) => {
+        if (params[nomParametre] !== undefined) {
+          definirValeur(idChamp, params[nomParametre]);
+        }
+      });
+    }
+
+    function mettreAJourChoixExcel(eleve) {
+      if (!worksheet) return;
+
+      const cellAddress = "B" + eleve.excelRowNumber;
+      worksheet[cellAddress] = { t: "s", v: eleve.choix || "" };
+
+      const range = XLSX.utils.decode_range(worksheet["!ref"]);
+      if (range.e.c < 1) range.e.c = 1;
+      if (range.e.r < eleve.excelRowNumber - 1) range.e.r = eleve.excelRowNumber - 1;
+      worksheet["!ref"] = XLSX.utils.encode_range(range);
+    }
+
+    function sauvegarderPlanningDansExcel() {
+      if (!workbook || planning.length === 0) return;
+
+      const lignes = [
+        ["Ordre", "Date", "Heure", "Élève", "Statut", "Matière"]
+      ];
+
+      planning.forEach((p, index) => {
+        lignes.push([
+          index + 1,
+          p.date,
+          p.heure,
+          p.nom,
+          p.statut,
+          p.choix
+        ]);
+      });
+
+      const feuillePlanning = XLSX.utils.aoa_to_sheet(lignes);
+
+      if (workbook.SheetNames.includes("Planning")) {
+        workbook.Sheets["Planning"] = feuillePlanning;
+      } else {
+        XLSX.utils.book_append_sheet(workbook, feuillePlanning, "Planning");
+      }
+    }
+
+    async function chargerFichier(file) {
+      if (!file) return;
+
+      if (!/\.(xlsx|xls)$/i.test(file.name)) {
+        alert("Merci de déposer un fichier Excel .xlsx ou .xls");
+        return;
+      }
+
+      originalFileName = nomFichierModifie(file.name);
+      const data = await file.arrayBuffer();
+      workbook = XLSX.read(data, { type: "array" });
+      sheetName = workbook.SheetNames[0];
+      worksheet = workbook.Sheets[sheetName];
+
+      chargerParametresDepuisExcel();
+      chargerDonneesDepuisWorksheet();
+    }
+
+    function chargerDonneesDepuisWorksheet() {
+      const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+
+      tbody.innerHTML = "";
+      donneesEleves = [];
+      planning = [];
+
+      reinitialiserPlanning();
+
+      for (let i = 1; i < rows.length; i++) {
+        const excelRowNumber = i + 1;
+        const nom = rows[i][0] ?? "";
+        const statut = statutCourt(rows[i][3]);
+        const dejaChoisi = rows[i][1] ?? "";
+
+        donneesEleves.push({
+          excelRowNumber,
+          nom,
+          statutOriginal: rows[i][3],
+          infos: rows[i][2],
+          statutCourt: statut,
+          choix: String(dejaChoisi ?? "").trim()
+        });
+      }
+
+      afficherEleves();
+      mettreAJourTitresEpreuve();
+      historiqueActions = [];
+      if (undoBtn) undoBtn.disabled = true;
+
+      table.hidden = false;
+      downloadBtn.disabled = false;
+      if (regroupBtn) regroupBtn.disabled = false;
+      planningBtn.disabled = false;
+      resetChoixBtn.disabled = false;
+      if (undoBtn) undoBtn.disabled = historiqueActions.length === 0;
+      if (pdfBtn) pdfBtn.disabled = true;
+      if (planningWindow && !planningWindow.closed) {
+        planningWindow.close();
+      }
+    }
+
+    function libelleChoix1() {
+      return String(valeur("libelleChoix1") || "Choix 1").trim() || "Choix 1";
+    }
+
+    function libelleChoix2() {
+      return String(valeur("libelleChoix2") || "Choix 2").trim() || "Choix 2";
+    }
+
+    function choixElevesModifiables() {
+      const choix = [libelleChoix1(), libelleChoix2()];
+      return Array.from(new Set(choix.filter(choix => choix && choix !== "Absent")));
+    }
+
+    function optionsChoixHTML(choixActuel) {
+      const choix = choixElevesModifiables();
+      if (choixActuel && choixActuel !== "Absent" && !choix.includes(choixActuel)) choix.push(choixActuel);
+
+      return `<option value="">Sans choix</option>`
+        + choix.map(valeurChoix => `<option value="${echapperHTML(valeurChoix)}" ${valeurChoix === choixActuel ? "selected" : ""}>${echapperHTML(valeurChoix)}</option>`).join("");
+    }
+
+    function synchroniserListeDansWorksheet() {
+      if (!worksheet) return;
+
+      donneesEleves.forEach((eleve, index) => {
+        eleve.excelRowNumber = index + 2;
+        const ligne = eleve.excelRowNumber;
+        worksheet["A" + ligne] = { t: "s", v: eleve.nom || "" };
+        worksheet["B" + ligne] = { t: "s", v: eleve.choix || "" };
+        worksheet["C" + ligne] = { t: "s", v: eleve.infos || "" };
+        worksheet["D" + ligne] = { t: "s", v: eleve.statutOriginal || "" };
+      });
+
+      const derniereLigne = Math.max(1, donneesEleves.length + 1);
+      worksheet["!ref"] = `A1:D${derniereLigne}`;
+    }
+
+    function appliquerChangementListe() {
+      synchroniserListeDansWorksheet();
+      afficherEleves();
+      reinitialiserPlanning();
+    }
+
+    function ajouterEleveDansListe(apresIndex = donneesEleves.length - 1) {
+      enregistrerActionPourAnnulation();
+      donneesEleves.splice(apresIndex + 1, 0, {
+        excelRowNumber: apresIndex + 3,
+        nom: "Nouvel élève",
+        statutOriginal: "",
+        infos: "",
+        statutCourt: "",
+        choix: ""
+      });
+
+      appliquerChangementListe();
+    }
+
+    function deplacerEleveListe(index, direction) {
+      const nouvelIndex = index + direction;
+      if (nouvelIndex < 0 || nouvelIndex >= donneesEleves.length) return;
+
+      enregistrerActionPourAnnulation();
+      const [eleve] = donneesEleves.splice(index, 1);
+      donneesEleves.splice(nouvelIndex, 0, eleve);
+      appliquerChangementListe();
+    }
+
+    function supprimerEleveListe(index) {
+      enregistrerActionPourAnnulation();
+      donneesEleves.splice(index, 1);
+      appliquerChangementListe();
+    }
+
+    function afficherEleves() {
+      tbody.innerHTML = "";
+
+      donneesEleves.forEach((eleve, index) => {
+        if (!eleve.nom && !eleve.statutCourt) return;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="text" value="${echapperHTML(eleve.nom)}" aria-label="Nom de l'élève" style="width: 100%; box-sizing: border-box;"></td>
+          <td><input type="text" value="${echapperHTML(eleve.statutOriginal || eleve.statutCourt)}" aria-label="Statut de ${echapperHTML(eleve.nom)}" style="width: 100%; box-sizing: border-box;"></td>
+          <td class="choix">
+            <select aria-label="Choix de ${echapperHTML(eleve.nom)}" ${eleve.choix === "Absent" ? "disabled" : ""}>
+              ${optionsChoixHTML(eleve.choix === "Absent" ? "" : eleve.choix)}
+            </select>
+            <input type="text" class="date-input" placeholder="Nouveau choix" aria-label="Nouveau choix">
+            <button type="button" class="ordre-btn appliquer-choix-btn">Appliquer</button>
+            <button type="button" class="ordre-btn effacer-choix-btn">Effacer</button>
+            <label><input type="checkbox" value="Absent" ${eleve.choix === "Absent" ? "checked" : ""}> Absent(e)</label>
+          </td>
+          <td class="liste-actions">
+            <button type="button" class="ordre-btn monter-eleve" ${index === 0 ? "disabled" : ""}>↑</button>
+            <button type="button" class="ordre-btn descendre-eleve" ${index === donneesEleves.length - 1 ? "disabled" : ""}>↓</button>
+            <button type="button" class="ajout-btn ajouter-eleve-liste">+</button>
+            <button type="button" class="ordre-btn supprimer-eleve">Supprimer</button>
+          </td>
+        `;
+
+        const nomInput = tr.querySelector('td:nth-child(1) input');
+        const statutInput = tr.querySelector('td:nth-child(2) input');
+        const select = tr.querySelector("select");
+        const nouveauChoixInput = tr.querySelector('input[placeholder="Nouveau choix"]');
+        const absent = tr.querySelector("input[type=checkbox]");
+
+        nomInput.addEventListener("change", () => {
+          if (eleve.nom === nomInput.value) return;
+          enregistrerActionPourAnnulation();
+          eleve.nom = nomInput.value;
+          synchroniserListeDansWorksheet();
+          reinitialiserPlanning();
+        });
+
+        statutInput.addEventListener("change", () => {
+          if (eleve.statutOriginal === statutInput.value) return;
+          enregistrerActionPourAnnulation();
+          eleve.statutOriginal = statutInput.value;
+          eleve.statutCourt = statutCourt(statutInput.value);
+          synchroniserListeDansWorksheet();
+          reinitialiserPlanning();
+        });
+
+        select.addEventListener("change", () => {
+          if (eleve.choix === select.value) return;
+          enregistrerActionPourAnnulation();
+          eleve.choix = select.value;
+          absent.checked = false;
+          mettreAJourChoixExcel(eleve);
+          reinitialiserPlanning();
+        });
+
+        tr.querySelector(".appliquer-choix-btn").addEventListener("click", () => {
+          const nouveauChoix = nouveauChoixInput.value.trim();
+          if (!nouveauChoix || nouveauChoix === "Absent") return;
+          if (eleve.choix === nouveauChoix) return;
+          enregistrerActionPourAnnulation();
+          absent.checked = false;
+          eleve.choix = nouveauChoix;
+          appliquerChangementListe();
+        });
+
+        tr.querySelector(".effacer-choix-btn").addEventListener("click", () => {
+          if (!eleve.choix) return;
+          enregistrerActionPourAnnulation();
+          eleve.choix = "";
+          absent.checked = false;
+          appliquerChangementListe();
+        });
+
+        absent.addEventListener("change", () => {
+          enregistrerActionPourAnnulation();
+          eleve.choix = absent.checked ? "Absent" : select.value;
+          if (absent.checked) select.value = "";
+          mettreAJourChoixExcel(eleve);
+          afficherEleves();
+          reinitialiserPlanning();
+        });
+
+        tr.querySelector(".monter-eleve").addEventListener("click", () => deplacerEleveListe(index, -1));
+        tr.querySelector(".descendre-eleve").addEventListener("click", () => deplacerEleveListe(index, 1));
+        tr.querySelector(".ajouter-eleve-liste").addEventListener("click", () => ajouterEleveDansListe(index));
+        tr.querySelector(".supprimer-eleve").addEventListener("click", () => supprimerEleveListe(index));
+
+        tbody.appendChild(tr);
+      });
+    }
+
+
+    if (regroupBtn) {
+      regroupBtn.addEventListener("click", () => {
+        donneesEleves.sort((a, b) => {
+          const ordre = {};
+          ordre[libelleChoix1()] = 1;
+          ordre[libelleChoix2()] = 2;
+          ordre["Absent"] = 3;
+          ordre[""] = 4;
+          return (ordre[a.choix] || 5) - (ordre[b.choix] || 5);
+        });
+
+        afficherEleves();
+        reinitialiserPlanning();
+      });
+    }
+
+    function comparerNoms(a, b) {
+      return String(a.nom ?? "").localeCompare(String(b.nom ?? ""), "fr", {
+        sensitivity: "base",
+        ignorePunctuation: true
+      });
+    }
+
+    function melangerTableau(tableau) {
+      const copie = tableau.slice();
+      for (let i = copie.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copie[i], copie[j]] = [copie[j], copie[i]];
+      }
+      return copie;
+    }
+
+    function preparerFilesPlanning() {
+      const params = lireParametresPlanning();
+      const choix1Libelle = libelleChoix1();
+      const choix2Libelle = libelleChoix2();
+
+      const elevesAvecChoix = donneesEleves
+        .filter(e => e.choix && e.choix !== "Absent")
+        .sort(comparerNoms);
+      const elevesSansChoix = donneesEleves
+        .filter(e => !e.choix)
+        .sort(comparerNoms);
+      const choix1 = donneesEleves
+        .filter(e => e.choix === choix1Libelle)
+        .sort(comparerNoms);
+      const choix2 = donneesEleves
+        .filter(e => e.choix === choix2Libelle)
+        .sort(comparerNoms);
+      const autresChoix = donneesEleves
+        .filter(e => e.choix && e.choix !== "Absent" && e.choix !== choix1Libelle && e.choix !== choix2Libelle)
+        .sort(comparerNoms);
+
+      if (params.prioritePlanning === "alphabetique") {
+        return elevesAvecChoix.concat(elevesSansChoix).sort(comparerNoms);
+      }
+
+      if (params.prioritePlanning === "alphabetique_inverse") {
+        return elevesAvecChoix.concat(elevesSansChoix).sort((a, b) => comparerNoms(b, a));
+      }
+
+      if (params.prioritePlanning === "aleatoire") {
+        return melangerTableau(elevesAvecChoix.concat(elevesSansChoix));
+      }
+
+      if (params.prioritePlanning === "alternance") {
+        const alternes = [];
+        let commencerParChoix1 = true;
+
+        while (choix1.length > 0 || choix2.length > 0) {
+          const premiereListe = commencerParChoix1 ? choix1 : choix2;
+          const secondeListe = commencerParChoix1 ? choix2 : choix1;
+
+          if (premiereListe.length > 0) {
+            alternes.push(premiereListe.shift());
+          } else if (secondeListe.length > 0) {
+            alternes.push(secondeListe.shift());
+          }
+
+          commencerParChoix1 = !commencerParChoix1;
+        }
+
+        return alternes.concat(autresChoix).concat(elevesSansChoix);
+      }
+
+      if (params.prioritePlanning === "choix2") {
+        return choix2.concat(choix1).concat(autresChoix).concat(elevesSansChoix);
+      }
+
+      return choix1.concat(choix2).concat(autresChoix).concat(elevesSansChoix);
+    }
+
+    function genererPlanning() {
+      const elevesAPlacer = preparerFilesPlanning();
+      const { creneaux, dureeEleveMinutes, pauseMinutes, elevesAvantPause } = lireParametresPlanning();
+
+      if (creneaux.length === 0) {
+        alert("Aucun créneau valide n'a été renseigné.");
+        return;
+      }
+
+      planning = [];
+
+      for (const bloc of creneaux) {
+        let heure = minutesDepuisMinuit(bloc.debut);
+        const fin = minutesDepuisMinuit(bloc.fin);
+        let passagesDepuisPause = 0;
+
+        while (heure + dureeEleveMinutes <= fin && elevesAPlacer.length > 0) {
+          if (elevesAvantPause > 0 && passagesDepuisPause === elevesAvantPause) {
+            if (heure + pauseMinutes <= fin) {
+              heure += pauseMinutes;
+            }
+            passagesDepuisPause = 0;
+          }
+
+          const eleve = elevesAPlacer.shift();
+
+          planning.push({
+            date: bloc.dateAffichee,
+            groupe: bloc.groupe,
+            heure: heureDepuisMinutes(heure) + " - " + heureDepuisMinutes(heure + dureeEleveMinutes),
+            nom: eleve.nom,
+            statut: eleve.statutCourt,
+            choix: eleve.choix
+          });
+
+          heure += dureeEleveMinutes;
+          passagesDepuisPause++;
+        }
+      }
+
+      afficherPlanning(elevesAPlacer);
+    }
+
+    function libellePrioritePlanning() {
+      const select = document.getElementById("prioritePlanning");
+      return select.options[select.selectedIndex]?.textContent || "";
+    }
+
+    function genererLignesPlanningHTML() {
+      return planning.map((p, index) => `
+        <tr>
+          <td class="ordre">
+            <button type="button" class="ordre-btn" ${index === 0 ? "disabled" : ""} onclick="window.opener.deplacerPassagePlanning(${index}, -1)">↑</button>
+            <button type="button" class="ordre-btn" ${index === planning.length - 1 ? "disabled" : ""} onclick="window.opener.deplacerPassagePlanning(${index}, 1)">↓</button>
+          </td>
+          <td>${echapperHTML(p.date)}</td>
+          <td>${echapperHTML(p.heure)}</td>
+          <td>${echapperHTML(p.nom)}</td>
+          <td>${echapperHTML(p.statut)}</td>
+          <td>${echapperHTML(p.choix)}</td>
+          <td class="signature"></td>
+        </tr>
+      `).join("");
+    }
+
+    function contenuOngletPlanning(nonPlaces = []) {
+      const absents = donneesEleves.filter(e => e.choix === "Absent").length;
+      const info = nonPlaces.length
+        ? `${planning.length} élèves placés. ${nonPlaces.length} non placés. ${absents} absent(s).`
+        : `${planning.length} élèves placés. ${absents} absent(s).`;
+
+      return `<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${echapperHTML(titreEpreuve())}</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 24px; color: #1f2937; background: #f7fee7; }
+    h1 { color: #166534; margin-bottom: 4px; }
+    .muted { color: #64748b; font-size: .95rem; }
+    .toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 16px; border: 1px solid #86efac; border-radius: 16px; background: white; box-shadow: 0 4px 12px rgba(22, 101, 52, 0.10); margin: 16px 0; }
+    button { padding: 8px 10px; border: 1px solid #fdba74; border-radius: 10px; background: #16a34a; color: white; cursor: pointer; font-weight: 600; }
+    button:hover { background: #15803d; }
+    button:disabled { background: #d9f99d; color: #64748b; cursor: not-allowed; border-color: #d9f99d; }
+    .ordre-btn { padding: 4px 8px; border-radius: 8px; font-size: .85rem; background: #ea580c; }
+    .ordre-btn:hover { background: #c2410c; }
+    table { border-collapse: collapse; width: 100%; margin-top: 16px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); }
+    th, td { border: 1px solid #bbf7d0; padding: 8px 10px; text-align: left; }
+    th { background: #16a34a; color: white; position: sticky; top: 0; }
+    tr:nth-child(even) { background: #fff7ed; }
+    .ordre { display: flex; gap: 6px; white-space: nowrap; }
+    .signature { min-width: 180px; height: 34px; background: white; }
+  </style>
+</head>
+<body>
+  <h1>${echapperHTML(titreEpreuve())}</h1>
+  <p class="muted">Lycée Agricole du Bourbonnais — ${echapperHTML(libellePrioritePlanning())}</p>
+  <div class="toolbar">
+    <button type="button" onclick="window.opener.reinitialiserPlanning(); window.close();">Réinitialiser le planning</button>
+    <button type="button" onclick="window.opener.exporterPlanningPDF();">Exporter le planning en PDF</button>
+    <span class="muted">${echapperHTML(info)}</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Ordre</th>
+        <th>Date</th>
+        <th>Heure</th>
+        <th>Élève</th>
+        <th>Statut</th>
+        <th>Matière</th>
+        <th>Émargement</th>
+      </tr>
+    </thead>
+    <tbody>${genererLignesPlanningHTML()}</tbody>
+  </table>
+</body>
+</html>`;
+    }
+
+    function ouvrirOngletPlanning(nonPlaces = []) {
+      if (!planningWindow || planningWindow.closed) {
+        planningWindow = window.open("", "planning_passage");
+      }
+
+      if (!planningWindow) {
+        alert("Le navigateur a bloqué l'ouverture du nouvel onglet. Autorise les pop-ups pour afficher le planning.");
+        return;
+      }
+
+      planningWindow.document.open();
+      planningWindow.document.write(contenuOngletPlanning(nonPlaces));
+      planningWindow.document.close();
+      planningWindow.focus();
+    }
+
+    function afficherPlanning(nonPlaces) {
+      planningTbody.innerHTML = "";
+
+      planning.forEach((p, index) => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${echapperHTML(p.date)}</td>
+          <td>${echapperHTML(p.heure)}</td>
+          <td>${echapperHTML(p.nom)}</td>
+          <td>${echapperHTML(p.statut)}</td>
+          <td>${echapperHTML(p.choix)}</td>
+          <td></td>
+        `;
+
+        planningTbody.appendChild(tr);
+      });
+
+      const absents = donneesEleves.filter(e => e.choix === "Absent").length;
+
+      planningTitle.hidden = true;
+      planningInfo.hidden = true;
+      planningTable.hidden = true;
+      if (pdfBtn) pdfBtn.disabled = planning.length === 0;
+
+      planningInfo.textContent = nonPlaces.length
+        ? `${planning.length} élèves placés. ${nonPlaces.length} non placés. ${absents} absent(s).`
+        : `${planning.length} élèves placés. ${absents} absent(s).`;
+
+      ouvrirOngletPlanning(nonPlaces);
+    }
+
+    function deplacerPassagePlanning(index, direction) {
+      const nouvelIndex = index + direction;
+      if (nouvelIndex < 0 || nouvelIndex >= planning.length) return;
+
+      enregistrerActionPourAnnulation();
+      const eleveActuel = {
+        nom: planning[index].nom,
+        statut: planning[index].statut,
+        choix: planning[index].choix
+      };
+
+      planning[index].nom = planning[nouvelIndex].nom;
+      planning[index].statut = planning[nouvelIndex].statut;
+      planning[index].choix = planning[nouvelIndex].choix;
+
+      planning[nouvelIndex].nom = eleveActuel.nom;
+      planning[nouvelIndex].statut = eleveActuel.statut;
+      planning[nouvelIndex].choix = eleveActuel.choix;
+
+      ouvrirOngletPlanning([]);
+    }
+
+    function reinitialiserPlanning() {
+      planning = [];
+      planningTbody.innerHTML = "";
+      planningTitle.hidden = true;
+      planningInfo.hidden = true;
+      planningTable.hidden = true;
+      if (pdfBtn) pdfBtn.disabled = true;
+    }
+
+    function reinitialiserChoixEleves() {
+      if (!worksheet) return;
+
+      enregistrerActionPourAnnulation();
+      donneesEleves.forEach(eleve => {
+        eleve.choix = "";
+        mettreAJourChoixExcel(eleve);
+      });
+
+      afficherEleves();
+      reinitialiserPlanning();
+    }
+
+    if (undoBtn) undoBtn.addEventListener("click", restaurerDerniereAction);
+
+
+    ["libelleChoix1", "libelleChoix2"].forEach(id => {
+      const champ = document.getElementById(id);
+      if (champ) {
+        champ.addEventListener("change", () => {
+          afficherEleves();
+          reinitialiserPlanning();
+        });
+      }
+    });
+
+    planningBtn.addEventListener("click", genererPlanning);
+    resetChoixBtn.addEventListener("click", reinitialiserChoixEleves);
+
+    function exporterPlanningPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: "landscape" });
+      const params = lireParametresPlanning();
+
+      doc.setFillColor(22, 163, 74);
+      doc.rect(0, 0, 297, 32, "F");
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(17);
+      doc.setFont(undefined, "bold");
+      doc.text(params.epreuve || "Nom de l’épreuve", 14, 12);
+
+      doc.setFontSize(12);
+      doc.setFont(undefined, "normal");
+          doc.setFontSize(10);
+          doc.setFont(undefined, "bold");
+          doc.text("Lycée Agricole du Bourbonnais", 148.5, 28, { align: "center" });
+          doc.setFont(undefined, "normal");
+          doc.setFontSize(10);
+          doc.text(`Classe : ${params.classe || ""}`, 200, 12);
+          doc.text(`Année scolaire : ${params.anneeScolaire || ""}`, 200, 20);
+
+          doc.setTextColor(31, 41, 55);
+          doc.setFont(undefined, "normal");
+let y = 30;
+
+      let planningParDate = {};
+      planning.forEach(p => {
+        if (!planningParDate[p.date]) planningParDate[p.date] = [];
+        planningParDate[p.date].push(p);
+      });
+
+      const dates = Object.keys(planningParDate);
+
+      dates.forEach((date, indexDate) => {
+        const yTitre = indexDate === 0
+          ? y + 10
+          : (doc.lastAutoTable ? doc.lastAutoTable.finalY + 14 : y + 14);
+
+        if (yTitre > 195) {
+          doc.addPage("landscape");
+          y = 20;
+        } else {
+          y = yTitre;
+        }
+
+        doc.setTextColor(31, 41, 55);
+        doc.setFontSize(11);
+        doc.setFont(undefined, "bold");
+        doc.text(date, 14, y);
+
+        doc.autoTable({
+          startY: y + 6,
+          head: [["Date", "Heure", "Élève", "Statut", "Matière", "Émargement"]],
+          body: planningParDate[date]
+            .filter(p => p.nom && p.nom.trim() !== "")
+            .map(p => [
+              p.date,
+              p.heure,
+              p.nom,
+              p.statut,
+              p.choix,
+              ""
+            ]),
+          styles: {
+            fontSize: 11,
+            cellPadding: 2.5,
+            minCellHeight: 12,
+            lineColor: [120, 120, 120],
+            lineWidth: 0.3
+          },
+          headStyles: {
+            fillColor: [234, 88, 12],
+            textColor: [255, 255, 255],
+            fontSize: 12,
+            lineColor: [70, 70, 70],
+            lineWidth: 0.4
+          },
+          bodyStyles: {
+            lineColor: [140, 140, 140],
+            lineWidth: 0.3
+          },
+          alternateRowStyles: {
+            fillColor: [230, 245, 220]
+          },
+          columnStyles: {
+            0: { cellWidth: 52 },
+            1: { cellWidth: 34 },
+            2: { cellWidth: 72 },
+            3: { cellWidth: 20 },
+            4: { cellWidth: 28 },
+            5: { cellWidth: 58, minCellHeight: 14 }
+          }
+        });
+      });
+
+      doc.save("planning_passage.pdf");
+    }
+
+    if (pdfBtn) pdfBtn.addEventListener("click", exporterPlanningPDF);
+
+    const epreuveInput = document.getElementById("epreuve");
+    if (epreuveInput) epreuveInput.addEventListener("input", mettreAJourTitresEpreuve);
+    mettreAJourTitresEpreuve();
+
+    downloadBtn.addEventListener("click", () => {
+      if (!workbook) return;
+      enregistrerParametresDansExcel();
+      sauvegarderPlanningDansExcel();
+      XLSX.writeFile(workbook, originalFileName);
+    });
+
+    fileInput.addEventListener("change", event => {
+      chargerFichier(event.target.files[0]);
+    });
+
+    csvFileInput.addEventListener("change", event => {
+      chargerCSVPronote(event.target.files[0]);
+    });
+
+    dropZone.addEventListener("click", () => fileInput.click());
+
+    dropZone.addEventListener("dragover", event => {
+      event.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+    });
+
+    dropZone.addEventListener("drop", event => {
+      event.preventDefault();
+      dropZone.classList.remove("dragover");
+      chargerFichier(event.dataTransfer.files[0]);
+    });
+
+    csvDropZone.addEventListener("click", () => csvFileInput.click());
+
+    csvDropZone.addEventListener("dragover", event => {
+      event.preventDefault();
+      csvDropZone.classList.add("dragover");
+    });
+
+    csvDropZone.addEventListener("dragleave", () => {
+      csvDropZone.classList.remove("dragover");
+    });
+
+    csvDropZone.addEventListener("drop", event => {
+      event.preventDefault();
+      csvDropZone.classList.remove("dragover");
+      chargerCSVPronote(event.dataTransfer.files[0]);
+    });
+  </script>
+</body>
+</html>
