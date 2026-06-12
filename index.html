@@ -54,7 +54,7 @@
 
     .param-row {
       display: grid;
-      grid-template-columns: 110px repeat(3, minmax(210px, auto));
+      grid-template-columns: 110px repeat(4, minmax(190px, auto));
       gap: 12px;
       align-items: center;
       padding: 12px 0;
@@ -123,17 +123,46 @@
       min-width: 145px;
     }
 
+    .liste-cell {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
     .liste-actions {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       white-space: nowrap;
       align-items: center;
     }
 
     .liste-actions button {
-      padding: 4px 8px;
+      padding: 4px 7px;
       border-radius: 8px;
-      font-size: .85rem;
+      font-size: .82rem;
+    }
+
+    .planning-summary {
+      display: inline-flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .summary-places {
+      color: #16a34a;
+      font-weight: 400;
+    }
+
+    .summary-alert {
+      color: #dc2626;
+      font-weight: 800;
+    }
+
+    .summary-ok {
+      color: #15803d;
+      font-weight: 400;
     }
 
     .gestion-choix {
@@ -149,25 +178,149 @@
       white-space: nowrap;
     }
 
+    .top-bar {
+      display: grid;
+      grid-template-columns: 1fr minmax(320px, 520px);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+
+    .title-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 132px;
+      padding: 18px 24px;
+      overflow: hidden;
+      border: 1px solid #86efac;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #ffffff 0%, #dcfce7 54%, #ffedd5 100%);
+      box-shadow: 0 10px 28px rgba(22, 101, 52, 0.14);
+    }
+
+    .title-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 12% 20%, rgba(22, 163, 74, 0.16), transparent 26%),
+        radial-gradient(circle at 88% 76%, rgba(234, 88, 12, 0.16), transparent 28%);
+      pointer-events: none;
+    }
+
+    .title-card h1,
+    .title-card p {
+      position: relative;
+      z-index: 1;
+    }
+
+    .title-card h1 {
+      margin: 0;
+      max-width: 100%;
+      font-size: clamp(1.7rem, 3vw, 2.45rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: #14532d;
+      text-wrap: balance;
+    }
+
+    .title-card .muted {
+      margin: 10px 0 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #166534;
+      font-weight: 700;
+      box-shadow: inset 0 0 0 1px rgba(22, 101, 52, 0.12);
+    }
+
+
+    .title-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 142px;
+      padding: 22px 24px;
+      border: 1px solid #86efac;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #ffffff 0%, #ecfccb 52%, #dcfce7 100%);
+      box-shadow: 0 8px 24px rgba(22, 101, 52, 0.16);
+    }
+
+    .title-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 9px;
+      background: linear-gradient(180deg, #16a34a, #ea580c);
+    }
+
+    .title-card h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.9rem, 4vw, 3rem);
+      line-height: 1.05;
+      color: #14532d;
+      letter-spacing: -0.03em;
+      text-align: center;
+    }
+
+    .title-card .establishment-name {
+      margin: 0;
+      color: #166534;
+      font-size: 1.12rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .title-card .copyright-line {
+      margin: 8px 0 0;
+      color: #64748b;
+      font-size: .82rem;
+      text-align: center;
+    }
+
+    .live-summary-card {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid #86efac;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(22, 101, 52, 0.10);
+      margin: 16px 0 10px;
+    }
+
     .drop-zone {
       border: 2px dashed #16a34a;
-      border-radius: 18px;
-      padding: 30px;
-      text-align: center;
+      border-radius: 14px;
+      padding: 10px 12px;
+      text-align: left;
       background: #dcfce7;
       transition: background .15s, border-color .15s;
       cursor: pointer;
     }
 
 	.drop-container {
-	  display: flex;
-	  gap: 20px;
-	  flex-wrap: wrap;
+	  display: grid;
+	  grid-template-columns: 1fr;
+	  gap: 8px;
+      padding: 10px;
+      border: 1px solid #86efac;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(22, 101, 52, 0.10);
 	}
 
 	.drop-container .drop-zone {
-	  flex: 1;
-	  min-width: 260px;
+	  min-width: 0;
 	}
 
 	#dropZoneCSV {
@@ -182,8 +335,14 @@
 
     .drop-zone strong {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
       color: #166534;
+      font-size: .95rem;
+    }
+
+    .drop-zone .muted {
+      font-size: .82rem;
+      line-height: 1.2;
     }
 
     table {
@@ -234,6 +393,10 @@
     }
 
     @media (max-width: 900px) {
+      .top-bar {
+        grid-template-columns: 1fr;
+      }
+
       .param-row {
         grid-template-columns: 1fr;
       }
@@ -247,21 +410,26 @@
 </head>
 
 <body>
-  <h1 id="titreEpreuvePrincipal" style="text-align:center;">Nom de l’épreuve</h1>
-  <p class="muted" style="text-align:center;">Lycée Agricole du Bourbonnais</p>
+  <div class="top-bar">
+    <div class="title-card">
+      <h1 id="titreEpreuvePrincipal">Nom de l’épreuve</h1>
+      <p id="etablissementPrincipal" class="establishment-name"></p>
+      <p class="copyright-line">(c) Lycée Agricole du Bourbonnais 12/06/2026</p>
+    </div>
 
-	<div class="drop-container">
-	  <div id="csvDropZone" class="drop-zone">
-		<strong>Dépose l’export CSV Pronote ici</strong>
-		<span class="muted">ou clique pour sélectionner un fichier .csv : converti au format Excel après enregistrement</span>
-		<input type="file" id="csvFileInput" accept=".csv,text/csv" hidden>
-	  </div>
-	  <div id="dropZone" class="drop-zone">
-		<strong>Dépose le fichier Excel ici (fichier déjà enregistré pour modifications)</strong>
-		<span class="muted">ou clique pour sélectionner un fichier .xlsx / .xls</span>
-		<input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
-	  </div>
-	 </div>
+    <div class="drop-container" aria-label="Import des fichiers">
+      <div id="csvDropZone" class="drop-zone">
+        <strong>CSV Pronote</strong>
+        <span class="muted">Dépose ou clique pour choisir un .csv, converti en Excel à l’enregistrement.</span>
+        <input type="file" id="csvFileInput" accept=".csv,text/csv" hidden>
+      </div>
+      <div id="dropZone" class="drop-zone">
+        <strong>Fichier Excel existant</strong>
+        <span class="muted">Dépose ou clique pour choisir un .xlsx / .xls déjà enregistré.</span>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+      </div>
+    </div>
+  </div>
   <h2>Paramètres du planning</h2>
 
   <div class="params-card">
@@ -281,6 +449,11 @@
       <label>
         Épreuve :
         <input id="epreuve" class="date-input" type="text" value="">
+      </label>
+
+      <label>
+        Établissement :
+        <input id="etablissement" class="date-input" type="text" value="">
       </label>
     </div>
 
@@ -331,10 +504,56 @@
     </div>
 
     <div class="param-row">
+      <span class="param-title">Jour 3</span>
+
+      <label>
+        Date :
+        <input id="date3" class="date-input" type="date" value="">
+      </label>
+
+      <label>
+        Matin :
+        <input id="date3MatinDebut" type="time" value="">
+        à
+        <input id="date3MatinFin" type="time" value="">
+      </label>
+
+      <label>
+        Après-midi :
+        <input id="date3ApremDebut" type="time" value="">
+        à
+        <input id="date3ApremFin" type="time" value="">
+      </label>
+    </div>
+
+    <div class="param-row">
+      <span class="param-title">Jour 4</span>
+
+      <label>
+        Date :
+        <input id="date4" class="date-input" type="date" value="">
+      </label>
+
+      <label>
+        Matin :
+        <input id="date4MatinDebut" type="time" value="">
+        à
+        <input id="date4MatinFin" type="time" value="">
+      </label>
+
+      <label>
+        Après-midi :
+        <input id="date4ApremDebut" type="time" value="">
+        à
+        <input id="date4ApremFin" type="time" value="">
+      </label>
+    </div>
+
+    <div class="param-row">
       <span class="param-title">Passage</span>
 
       <label>
-        Temps par élève :
+        Temps par apprenant :
         <input id="dureeEleveMinutes" class="small-input" type="number" value="20" min="1">
         min
       </label>
@@ -350,23 +569,28 @@
       </label>
 
       <label>
-        Tous les :
+        après :
         <input id="elevesAvantPause" class="small-input" type="number" value="" min="1">
-        élèves
+        apprenants
       </label>
     </div>
 
     <div class="param-row">
-      <span class="param-title">Choix</span>
+      <span class="param-title">Options</span>
 
       <label>
-        Choix 1 :
-        <input id="libelleChoix1" class="date-input" type="text" value="Choix 1">
+        Option 1 :
+        <input id="libelleChoix1" class="date-input" type="text" value="Option 1">
       </label>
 
       <label>
-        Choix 2 :
-        <input id="libelleChoix2" class="date-input" type="text" value="Choix 2">
+        Option 2 :
+        <input id="libelleChoix2" class="date-input" type="text" value="Option 2">
+      </label>
+
+      <label>
+        Option 3 :
+        <input id="libelleChoix3" class="date-input" type="text" value="Option 3">
       </label>
     </div>
 
@@ -379,9 +603,10 @@
           <option value="alphabetique">Classement par ordre alphabétique</option>
           <option value="alphabetique_inverse">Classement par ordre alphabétique inverse</option>
           <option value="aleatoire">Classement aléatoire</option>
-          <option value="alternance">Alternance choix 1 / choix 2</option>
-          <option value="choix2">Priorité au choix 2</option>
-          <option value="choix1" selected>Priorité au choix 1</option>
+          <option value="alternance">Alternance option 1 / option 2 / option 3</option>
+          <option value="choix3">Priorité à l’option 3</option>
+          <option value="choix2">Priorité à l’option 2</option>
+          <option value="choix1" selected>Priorité à l’option 1</option>
         </select>
       </label>
     </div>
@@ -391,16 +616,18 @@
     <button id="planningBtn" disabled>Afficher le planning</button>
     <button id="downloadBtn" disabled>Enregistrer (format Excel)</button>
     <button id="undoBtn" disabled>Annuler la dernière action</button>
-    <button id="resetChoixBtn" disabled>Réinitialiser les choix élèves</button>
+    <button id="resetChoixBtn" disabled>Réinitialiser les options apprenants</button>
+    <button id="modeEmploiBtn" type="button">Mode d'emploi</button>
   </div>
+
+  <div id="liveSummary" class="live-summary-card planning-summary" hidden></div>
 
   <table id="table" hidden>
     <thead>
       <tr>
         <th>Liste</th>
         <th>Statut</th>
-        <th>Choix</th>
-        <th>Actions</th>
+        <th>Option</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -415,9 +642,9 @@
         <th>Ordre</th>
         <th>Date</th>
         <th>Heure</th>
-        <th>Élève</th>
+        <th>Apprenant</th>
         <th>Statut</th>
-        <th>Matière</th>
+        <th>Option</th>
         <th>Émargement</th>
       </tr>
     </thead>
@@ -443,6 +670,8 @@
     const planningBtn = document.getElementById("planningBtn");
     const pdfBtn = document.getElementById("pdfBtn");
     const resetChoixBtn = document.getElementById("resetChoixBtn");
+    const modeEmploiBtn = document.getElementById("modeEmploiBtn");
+    const liveSummary = document.getElementById("liveSummary");
     const undoBtn = document.getElementById("undoBtn");
     const planningTitle = document.getElementById("planningTitle");
     const planningInfo = document.getElementById("planningInfo");
@@ -512,16 +741,17 @@
 
     function mettreAJourTitresEpreuve() {
       const titre = titreEpreuve();
+      const etablissement = String(valeur("etablissement") || "").trim();
       const titrePrincipal = document.getElementById("titreEpreuvePrincipal");
+      const etablissementPrincipal = document.getElementById("etablissementPrincipal");
       if (titrePrincipal) titrePrincipal.textContent = titre;
-      document.title = titre;
+      if (etablissementPrincipal) etablissementPrincipal.textContent = etablissement;
+      document.title = etablissement ? `${titre} - ${etablissement}` : titre;
     }
 
     function copierEtatCourant() {
       return {
         donneesEleves: JSON.parse(JSON.stringify(donneesEleves)),
-        choixBase: choixBase.slice(),
-        choixPersonnalises: choixPersonnalises.slice(),
         planning: JSON.parse(JSON.stringify(planning))
       };
     }
@@ -535,10 +765,8 @@
     function restaurerDerniereAction() {
       const etat = historiqueActions.pop();
       if (!etat) return;
-      donneesEleves = etat.donneesEleves;
-      choixBase = etat.choixBase;
-      choixPersonnalises = etat.choixPersonnalises;
-      planning = etat.planning;
+      donneesEleves = etat.donneesEleves || [];
+      planning = etat.planning || [];
       synchroniserListeDansWorksheet();
       afficherEleves();
       if (planning.length) ouvrirOngletPlanning([]); else reinitialiserPlanning();
@@ -622,10 +850,10 @@
       const indexInfos = trouverColonneInfosPronote(headers, lignes);
 
       if (indexEleves === -1 || indexRegime === -1) {
-        throw new Error("Colonnes Pronote introuvables : le CSV doit contenir au minimum « Élèves » et « Régime ».");
+        throw new Error("Colonnes Pronote introuvables : le CSV doit contenir au minimum « Apprenants » et « Régime ».");
       }
 
-      const lignesExcel = [["Élèves", "Sujet", "", "Régime"]];
+      const lignesExcel = [["Apprenants", "Sujet", "", "Régime"]];
 
       lignes.forEach(ligne => {
         const nom = String(ligne[indexEleves] ?? "").trim();
@@ -687,17 +915,23 @@
       ajouterCreneauSiValide(creneaux, valeur("date1"), valeur("date1ApremDebut"), valeur("date1ApremFin"), "Date 1");
       ajouterCreneauSiValide(creneaux, valeur("date2"), valeur("date2MatinDebut"), valeur("date2MatinFin"), "Date 2");
       ajouterCreneauSiValide(creneaux, valeur("date2"), valeur("date2ApremDebut"), valeur("date2ApremFin"), "Date 2");
+      ajouterCreneauSiValide(creneaux, valeur("date3"), valeur("date3MatinDebut"), valeur("date3MatinFin"), "Date 3");
+      ajouterCreneauSiValide(creneaux, valeur("date3"), valeur("date3ApremDebut"), valeur("date3ApremFin"), "Date 3");
+      ajouterCreneauSiValide(creneaux, valeur("date4"), valeur("date4MatinDebut"), valeur("date4MatinFin"), "Date 4");
+      ajouterCreneauSiValide(creneaux, valeur("date4"), valeur("date4ApremDebut"), valeur("date4ApremFin"), "Date 4");
 
       return {
         classe: valeur("classe"),
         anneeScolaire: valeur("anneeScolaire"),
         epreuve: valeur("epreuve"),
+        etablissement: valeur("etablissement"),
         creneaux,
         dureeEleveMinutes: Math.max(1, Number(valeur("dureeEleveMinutes") || 20)),
         pauseMinutes: Number(valeur("pauseMinutes") || 0),
         elevesAvantPause: Number(valeur("elevesAvantPause") || 0),
         libelleChoix1: libelleChoix1(),
         libelleChoix2: libelleChoix2(),
+        libelleChoix3: libelleChoix3(),
         prioritePlanning: valeur("prioritePlanning") || "choix1"
       };
     }
@@ -716,11 +950,13 @@
         ["Classe", params.classe],
         ["Année scolaire", params.anneeScolaire],
         ["Épreuve", params.epreuve],
-        ["Temps par élève en minutes", params.dureeEleveMinutes],
+        ["Établissement", params.etablissement],
+        ["Temps par apprenant en minutes", params.dureeEleveMinutes],
         ["Pause en minutes", params.pauseMinutes],
-        ["Pause tous les X élèves", params.elevesAvantPause],
-        ["Libellé choix 1", params.libelleChoix1],
-        ["Libellé choix 2", params.libelleChoix2],
+        ["Pause après X apprenants", params.elevesAvantPause],
+        ["Libellé option 1", params.libelleChoix1],
+        ["Libellé option 2", params.libelleChoix2],
+        ["Libellé option 3", params.libelleChoix3],
         ["Priorité planning", params.prioritePlanning],
         ["Date 1", valeur("date1")],
         ["Date 1 matin début", valeur("date1MatinDebut")],
@@ -731,7 +967,17 @@
         ["Date 2 matin début", valeur("date2MatinDebut")],
         ["Date 2 matin fin", valeur("date2MatinFin")],
         ["Date 2 après-midi début", valeur("date2ApremDebut")],
-        ["Date 2 après-midi fin", valeur("date2ApremFin")]
+        ["Date 2 après-midi fin", valeur("date2ApremFin")],
+        ["Date 3", valeur("date3")],
+        ["Date 3 matin début", valeur("date3MatinDebut")],
+        ["Date 3 matin fin", valeur("date3MatinFin")],
+        ["Date 3 après-midi début", valeur("date3ApremDebut")],
+        ["Date 3 après-midi fin", valeur("date3ApremFin")],
+        ["Date 4", valeur("date4")],
+        ["Date 4 matin début", valeur("date4MatinDebut")],
+        ["Date 4 matin fin", valeur("date4MatinFin")],
+        ["Date 4 après-midi début", valeur("date4ApremDebut")],
+        ["Date 4 après-midi fin", valeur("date4ApremFin")]
       ];
 
       const feuilleParametres = XLSX.utils.aoa_to_sheet(lignes);
@@ -760,11 +1006,16 @@
         "Classe": "classe",
         "Année scolaire": "anneeScolaire",
         "Épreuve": "epreuve",
-        "Temps par élève en minutes": "dureeEleveMinutes",
+        "Établissement": "etablissement",
+        "Temps par apprenant en minutes": "dureeEleveMinutes",
         "Pause en minutes": "pauseMinutes",
-        "Pause tous les X élèves": "elevesAvantPause",
+        "Pause après X apprenants": "elevesAvantPause",
+        "Libellé option 1": "libelleChoix1",
+        "Libellé option 2": "libelleChoix2",
+        "Libellé option 3": "libelleChoix3",
         "Libellé choix 1": "libelleChoix1",
         "Libellé choix 2": "libelleChoix2",
+        "Libellé choix 3": "libelleChoix3",
         "Priorité planning": "prioritePlanning",
         "Date 1": "date1",
         "Date 1 matin début": "date1MatinDebut",
@@ -775,7 +1026,17 @@
         "Date 2 matin début": "date2MatinDebut",
         "Date 2 matin fin": "date2MatinFin",
         "Date 2 après-midi début": "date2ApremDebut",
-        "Date 2 après-midi fin": "date2ApremFin"
+        "Date 2 après-midi fin": "date2ApremFin",
+        "Date 3": "date3",
+        "Date 3 matin début": "date3MatinDebut",
+        "Date 3 matin fin": "date3MatinFin",
+        "Date 3 après-midi début": "date3ApremDebut",
+        "Date 3 après-midi fin": "date3ApremFin",
+        "Date 4": "date4",
+        "Date 4 matin début": "date4MatinDebut",
+        "Date 4 matin fin": "date4MatinFin",
+        "Date 4 après-midi début": "date4ApremDebut",
+        "Date 4 après-midi fin": "date4ApremFin"
       };
 
       Object.entries(correspondances).forEach(([nomParametre, idChamp]) => {
@@ -801,7 +1062,7 @@
       if (!workbook || planning.length === 0) return;
 
       const lignes = [
-        ["Ordre", "Date", "Heure", "Élève", "Statut", "Matière"]
+        ["Ordre", "Date", "Heure", "Apprenant", "Statut", "Option"]
       ];
 
       planning.forEach((p, index) => {
@@ -873,6 +1134,7 @@
       if (undoBtn) undoBtn.disabled = true;
 
       table.hidden = false;
+      mettreAJourSyntheseDirecte();
       downloadBtn.disabled = false;
       if (regroupBtn) regroupBtn.disabled = false;
       planningBtn.disabled = false;
@@ -885,15 +1147,19 @@
     }
 
     function libelleChoix1() {
-      return String(valeur("libelleChoix1") || "Choix 1").trim() || "Choix 1";
+      return String(valeur("libelleChoix1") || "Option 1").trim() || "Option 1";
     }
 
     function libelleChoix2() {
-      return String(valeur("libelleChoix2") || "Choix 2").trim() || "Choix 2";
+      return String(valeur("libelleChoix2") || "Option 2").trim() || "Option 2";
+    }
+
+    function libelleChoix3() {
+      return String(valeur("libelleChoix3") || "Option 3").trim() || "Option 3";
     }
 
     function choixElevesModifiables() {
-      const choix = [libelleChoix1(), libelleChoix2()];
+      const choix = [libelleChoix1(), libelleChoix2(), libelleChoix3()];
       return Array.from(new Set(choix.filter(choix => choix && choix !== "Absent")));
     }
 
@@ -901,7 +1167,7 @@
       const choix = choixElevesModifiables();
       if (choixActuel && choixActuel !== "Absent" && !choix.includes(choixActuel)) choix.push(choixActuel);
 
-      return `<option value="">Sans choix</option>`
+      return `<option value="">Sans option</option>`
         + choix.map(valeurChoix => `<option value="${echapperHTML(valeurChoix)}" ${valeurChoix === choixActuel ? "selected" : ""}>${echapperHTML(valeurChoix)}</option>`).join("");
     }
 
@@ -925,13 +1191,14 @@
       synchroniserListeDansWorksheet();
       afficherEleves();
       reinitialiserPlanning();
+      mettreAJourSyntheseDirecte();
     }
 
     function ajouterEleveDansListe(apresIndex = donneesEleves.length - 1) {
       enregistrerActionPourAnnulation();
       donneesEleves.splice(apresIndex + 1, 0, {
         excelRowNumber: apresIndex + 3,
-        nom: "Nouvel élève",
+        nom: "Nouvel apprenant",
         statutOriginal: "",
         infos: "",
         statutCourt: "",
@@ -952,6 +1219,13 @@
     }
 
     function supprimerEleveListe(index) {
+      const apprenant = donneesEleves[index];
+      const nomApprenant = apprenant?.nom ? apprenant.nom : "cet apprenant";
+
+      if (!confirm(`Voulez-vous vraiment supprimer l'apprenant :\n\n${nomApprenant}\n\nCette action pourra être annulée avec le bouton "Annuler la dernière action".`)) {
+        return;
+      }
+
       enregistrerActionPourAnnulation();
       donneesEleves.splice(index, 1);
       appliquerChangementListe();
@@ -965,29 +1239,33 @@
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><input type="text" value="${echapperHTML(eleve.nom)}" aria-label="Nom de l'élève" style="width: 100%; box-sizing: border-box;"></td>
+          <td>
+            <div class="liste-cell">
+              <div class="liste-actions">
+                <button type="button" class="ordre-btn monter-eleve" ${index === 0 ? "disabled" : ""}>↑</button>
+                <button type="button" class="ordre-btn descendre-eleve" ${index === donneesEleves.length - 1 ? "disabled" : ""}>↓</button>
+                <button type="button" class="ajout-btn ajouter-eleve-liste">+</button>
+                <button type="button" class="ordre-btn supprimer-eleve">Supprimer</button>
+              </div>
+              <input type="text" value="${echapperHTML(eleve.nom)}" aria-label="Nom de l'apprenant" style="width: 100%; box-sizing: border-box;">
+            </div>
+          </td>
           <td><input type="text" value="${echapperHTML(eleve.statutOriginal || eleve.statutCourt)}" aria-label="Statut de ${echapperHTML(eleve.nom)}" style="width: 100%; box-sizing: border-box;"></td>
           <td class="choix">
-            <select aria-label="Choix de ${echapperHTML(eleve.nom)}" ${eleve.choix === "Absent" ? "disabled" : ""}>
+            <select aria-label="Option de ${echapperHTML(eleve.nom)}" ${eleve.choix === "Absent" ? "disabled" : ""}>
               ${optionsChoixHTML(eleve.choix === "Absent" ? "" : eleve.choix)}
             </select>
-            <input type="text" class="date-input" placeholder="Nouveau choix" aria-label="Nouveau choix">
+            <input type="text" class="date-input" placeholder="Nouvelle option" aria-label="Nouvelle option">
             <button type="button" class="ordre-btn appliquer-choix-btn">Appliquer</button>
             <button type="button" class="ordre-btn effacer-choix-btn">Effacer</button>
             <label><input type="checkbox" value="Absent" ${eleve.choix === "Absent" ? "checked" : ""}> Absent(e)</label>
-          </td>
-          <td class="liste-actions">
-            <button type="button" class="ordre-btn monter-eleve" ${index === 0 ? "disabled" : ""}>↑</button>
-            <button type="button" class="ordre-btn descendre-eleve" ${index === donneesEleves.length - 1 ? "disabled" : ""}>↓</button>
-            <button type="button" class="ajout-btn ajouter-eleve-liste">+</button>
-            <button type="button" class="ordre-btn supprimer-eleve">Supprimer</button>
           </td>
         `;
 
         const nomInput = tr.querySelector('td:nth-child(1) input');
         const statutInput = tr.querySelector('td:nth-child(2) input');
         const select = tr.querySelector("select");
-        const nouveauChoixInput = tr.querySelector('input[placeholder="Nouveau choix"]');
+        const nouveauChoixInput = tr.querySelector('input[placeholder="Nouvelle option"]');
         const absent = tr.querySelector("input[type=checkbox]");
 
         nomInput.addEventListener("change", () => {
@@ -1028,6 +1306,12 @@
 
         tr.querySelector(".effacer-choix-btn").addEventListener("click", () => {
           if (!eleve.choix) return;
+
+          const nomApprenant = eleve.nom ? eleve.nom : "cet apprenant";
+          if (!confirm(`Voulez-vous vraiment effacer l'option de l'apprenant :\n\n${nomApprenant}\n\nOption actuelle : ${eleve.choix}`)) {
+            return;
+          }
+
           enregistrerActionPourAnnulation();
           eleve.choix = "";
           absent.checked = false;
@@ -1059,8 +1343,9 @@
           const ordre = {};
           ordre[libelleChoix1()] = 1;
           ordre[libelleChoix2()] = 2;
-          ordre["Absent"] = 3;
-          ordre[""] = 4;
+          ordre[libelleChoix3()] = 3;
+          ordre["Absent"] = 4;
+          ordre[""] = 5;
           return (ordre[a.choix] || 5) - (ordre[b.choix] || 5);
         });
 
@@ -1089,6 +1374,7 @@
       const params = lireParametresPlanning();
       const choix1Libelle = libelleChoix1();
       const choix2Libelle = libelleChoix2();
+      const choix3Libelle = libelleChoix3();
 
       const elevesAvecChoix = donneesEleves
         .filter(e => e.choix && e.choix !== "Absent")
@@ -1102,8 +1388,11 @@
       const choix2 = donneesEleves
         .filter(e => e.choix === choix2Libelle)
         .sort(comparerNoms);
+      const choix3 = donneesEleves
+        .filter(e => e.choix === choix3Libelle)
+        .sort(comparerNoms);
       const autresChoix = donneesEleves
-        .filter(e => e.choix && e.choix !== "Absent" && e.choix !== choix1Libelle && e.choix !== choix2Libelle)
+        .filter(e => e.choix && e.choix !== "Absent" && e.choix !== choix1Libelle && e.choix !== choix2Libelle && e.choix !== choix3Libelle)
         .sort(comparerNoms);
 
       if (params.prioritePlanning === "alphabetique") {
@@ -1120,29 +1409,79 @@
 
       if (params.prioritePlanning === "alternance") {
         const alternes = [];
-        let commencerParChoix1 = true;
+        const listes = [choix1, choix2, choix3];
+        let indexListe = 0;
 
-        while (choix1.length > 0 || choix2.length > 0) {
-          const premiereListe = commencerParChoix1 ? choix1 : choix2;
-          const secondeListe = commencerParChoix1 ? choix2 : choix1;
-
-          if (premiereListe.length > 0) {
-            alternes.push(premiereListe.shift());
-          } else if (secondeListe.length > 0) {
-            alternes.push(secondeListe.shift());
-          }
-
-          commencerParChoix1 = !commencerParChoix1;
+        while (listes.some(liste => liste.length > 0)) {
+          const liste = listes[indexListe % listes.length];
+          if (liste.length > 0) alternes.push(liste.shift());
+          indexListe++;
         }
 
         return alternes.concat(autresChoix).concat(elevesSansChoix);
       }
 
-      if (params.prioritePlanning === "choix2") {
-        return choix2.concat(choix1).concat(autresChoix).concat(elevesSansChoix);
+      if (params.prioritePlanning === "choix3") {
+        return choix3.concat(choix1).concat(choix2).concat(autresChoix).concat(elevesSansChoix);
       }
 
-      return choix1.concat(choix2).concat(autresChoix).concat(elevesSansChoix);
+      if (params.prioritePlanning === "choix2") {
+        return choix2.concat(choix1).concat(choix3).concat(autresChoix).concat(elevesSansChoix);
+      }
+
+      return choix1.concat(choix2).concat(choix3).concat(autresChoix).concat(elevesSansChoix);
+    }
+
+    function calculerCapacitePlanning() {
+      const { creneaux, dureeEleveMinutes, pauseMinutes, elevesAvantPause } = lireParametresPlanning();
+      let capacite = 0;
+
+      creneaux.forEach(bloc => {
+        let heure = minutesDepuisMinuit(bloc.debut);
+        const fin = minutesDepuisMinuit(bloc.fin);
+        let passagesDepuisPause = 0;
+
+        while (heure + dureeEleveMinutes <= fin) {
+          if (elevesAvantPause > 0 && passagesDepuisPause === elevesAvantPause) {
+            if (heure + pauseMinutes <= fin) {
+              heure += pauseMinutes;
+            }
+            passagesDepuisPause = 0;
+            if (heure + dureeEleveMinutes > fin) break;
+          }
+
+          capacite++;
+          heure += dureeEleveMinutes;
+          passagesDepuisPause++;
+        }
+      });
+
+      return capacite;
+    }
+
+    function htmlSynthesePlanning(places, nonPlaces, absents) {
+      return `
+        <span class="summary-places">${places} apprenant(s) placé(s)</span>
+        <span class="${nonPlaces === 0 ? "summary-ok" : "summary-alert"}">⚠️ ${nonPlaces} apprenant(s) non placé(s)</span>
+        <span class="${absents === 0 ? "summary-ok" : "summary-alert"}">⚠️ ${absents} apprenant(s) absent(s)</span>
+      `;
+    }
+
+    function mettreAJourSyntheseDirecte() {
+      if (!liveSummary) return;
+      if (!donneesEleves.length) {
+        liveSummary.hidden = true;
+        return;
+      }
+
+      const absents = donneesEleves.filter(e => e.choix === "Absent").length;
+      const aPlacer = donneesEleves.filter(e => e.nom && e.choix !== "Absent").length;
+      const capacite = calculerCapacitePlanning();
+      const places = Math.min(aPlacer, capacite);
+      const nonPlaces = Math.max(0, aPlacer - capacite);
+
+      liveSummary.innerHTML = htmlSynthesePlanning(places, nonPlaces, absents);
+      liveSummary.hidden = false;
     }
 
     function genererPlanning() {
@@ -1212,9 +1551,7 @@
 
     function contenuOngletPlanning(nonPlaces = []) {
       const absents = donneesEleves.filter(e => e.choix === "Absent").length;
-      const info = nonPlaces.length
-        ? `${planning.length} élèves placés. ${nonPlaces.length} non placés. ${absents} absent(s).`
-        : `${planning.length} élèves placés. ${absents} absent(s).`;
+      const infoHTML = htmlSynthesePlanning(planning.length, nonPlaces.length, absents);
 
       return `<!doctype html>
 <html lang="fr">
@@ -1238,15 +1575,20 @@
     tr:nth-child(even) { background: #fff7ed; }
     .ordre { display: flex; gap: 6px; white-space: nowrap; }
     .signature { min-width: 180px; height: 34px; background: white; }
+    .planning-summary { display: inline-flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .summary-places { color: #16a34a; font-weight: 400; }
+    .summary-alert { color: #dc2626; font-weight: 800; }
+    .summary-ok { color: #15803d; font-weight: 400; }
   </style>
 </head>
 <body>
   <h1>${echapperHTML(titreEpreuve())}</h1>
-  <p class="muted">Lycée Agricole du Bourbonnais — ${echapperHTML(libellePrioritePlanning())}</p>
+  ${lireParametresPlanning().etablissement ? `<p class="muted">${echapperHTML(lireParametresPlanning().etablissement)}</p>` : ""}
+  <p class="muted">${echapperHTML(libellePrioritePlanning())}</p>
   <div class="toolbar">
     <button type="button" onclick="window.opener.reinitialiserPlanning(); window.close();">Réinitialiser le planning</button>
     <button type="button" onclick="window.opener.exporterPlanningPDF();">Exporter le planning en PDF</button>
-    <span class="muted">${echapperHTML(info)}</span>
+    <span class="planning-summary">${infoHTML}</span>
   </div>
   <table>
     <thead>
@@ -1254,9 +1596,9 @@
         <th>Ordre</th>
         <th>Date</th>
         <th>Heure</th>
-        <th>Élève</th>
+        <th>Apprenant</th>
         <th>Statut</th>
-        <th>Matière</th>
+        <th>Option</th>
         <th>Émargement</th>
       </tr>
     </thead>
@@ -1308,9 +1650,9 @@
       planningTable.hidden = true;
       if (pdfBtn) pdfBtn.disabled = planning.length === 0;
 
-      planningInfo.textContent = nonPlaces.length
-        ? `${planning.length} élèves placés. ${nonPlaces.length} non placés. ${absents} absent(s).`
-        : `${planning.length} élèves placés. ${absents} absent(s).`;
+      planningInfo.innerHTML = htmlSynthesePlanning(planning.length, nonPlaces.length, absents);
+      planningInfo.className = "planning-summary";
+      mettreAJourSyntheseDirecte();
 
       ouvrirOngletPlanning(nonPlaces);
     }
@@ -1344,6 +1686,7 @@
       planningInfo.hidden = true;
       planningTable.hidden = true;
       if (pdfBtn) pdfBtn.disabled = true;
+      mettreAJourSyntheseDirecte();
     }
 
     function reinitialiserChoixEleves() {
@@ -1357,12 +1700,105 @@
 
       afficherEleves();
       reinitialiserPlanning();
+      mettreAJourSyntheseDirecte();
+    }
+
+    window.deplacerPassagePlanning = deplacerPassagePlanning;
+    window.reinitialiserPlanning = reinitialiserPlanning;
+    window.exporterPlanningPDF = exporterPlanningPDF;
+
+    function contenuModeEmploi() {
+      return `<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mode d'emploi - Planning des oraux</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 28px; color: #1f2937; background: #f7fee7; line-height: 1.55; }
+    main { max-width: 980px; margin: 0 auto; background: white; border: 1px solid #86efac; border-radius: 22px; padding: 28px; box-shadow: 0 8px 24px rgba(22, 101, 52, 0.12); }
+    h1 { color: #166534; margin-top: 0; }
+    h2 { color: #ea580c; margin-top: 28px; }
+    li { margin: 6px 0; }
+    .note { background: #dcfce7; border-left: 5px solid #16a34a; padding: 12px 14px; border-radius: 12px; }
+    .warning { background: #fff7ed; border-left: 5px solid #ea580c; padding: 12px 14px; border-radius: 12px; }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Mode d'emploi - Planning des oraux</h1>
+    <p class="note">Ce programme permet d'importer une liste d'apprenants, de renseigner leurs options, puis de générer un ordre de passage sur plusieurs jours.</p>
+
+    <h2>1. Importer une liste</h2>
+    <ul>
+      <li>Déposez un export <strong>CSV Pronote</strong> dans la zone prévue, ou cliquez sur cette zone pour sélectionner le fichier.</li>
+      <li>Vous pouvez aussi rouvrir un fichier <strong>Excel déjà enregistré</strong> afin de reprendre un planning en cours.</li>
+      <li>Après import, la liste des apprenants apparaît dans le tableau principal.</li>
+    </ul>
+
+    <h2>2. Renseigner les détails</h2>
+    <ul>
+      <li>Complétez la classe, l'année scolaire, l'épreuve et l'établissement.</li>
+      <li>Le nom de l'épreuve et l'établissement apparaissent dans l'en-tête du programme et dans le PDF.</li>
+      <li>Indiquez les dates et créneaux horaires des jours nécessaires.</li>
+    </ul>
+
+    <h2>3. Gérer les options des apprenants</h2>
+    <ul>
+      <li>Les intitulés <strong>Option 1</strong>, <strong>Option 2</strong> et <strong>Option 3</strong> peuvent être renommés.</li>
+      <li>Attribuez une option avec la liste déroulante ou saisissez une nouvelle option, puis cliquez sur <strong>Appliquer</strong>.</li>
+      <li>Le bouton <strong>Effacer</strong> retire l'option de l'apprenant après confirmation.</li>
+      <li>Cochez <strong>Absent(e)</strong> pour exclure l'apprenant du planning.</li>
+    </ul>
+
+    <h2>4. Modifier la liste</h2>
+    <ul>
+      <li>Les flèches permettent de déplacer un apprenant dans la liste.</li>
+      <li>Le bouton <strong>+</strong> ajoute un apprenant sous la ligne concernée.</li>
+      <li>Le bouton <strong>Supprimer</strong> demande une confirmation avant suppression.</li>
+      <li>Le bouton <strong>Annuler la dernière action</strong> permet de revenir en arrière après une modification.</li>
+    </ul>
+
+    <h2>5. Générer le planning</h2>
+    <ul>
+      <li>Choisissez l'organisation du planning : ordre alphabétique, aléatoire, alternance ou priorité à une option.</li>
+      <li>Cliquez sur <strong>Afficher le planning</strong>.</li>
+      <li>Le planning s'ouvre dans un nouvel onglet avec le nombre d'apprenants placés, non placés et absents.</li>
+      <li>Les apprenants non placés ou absents apparaissent en rouge gras uniquement s'il y en a au moins un.</li>
+    </ul>
+
+    <h2>6. Exporter et enregistrer</h2>
+    <ul>
+      <li>Cliquez sur <strong>Exporter le planning en PDF</strong> depuis l'onglet du planning pour imprimer ou partager le planning.</li>
+      <li>Les avertissements ne sont pas affichés dans le PDF.</li>
+      <li>Cliquez sur <strong>Enregistrer (format Excel)</strong> pour conserver les données, les paramètres et le planning.</li>
+    </ul>
+
+    <p class="warning">Conseil : pensez à enregistrer régulièrement le fichier Excel si vous effectuez beaucoup de modifications.</p>
+  </main>
+</body>
+</html>`;
+    }
+
+    function ouvrirModeEmploi() {
+      const fenetreModeEmploi = window.open("", "mode_emploi_planning");
+      if (!fenetreModeEmploi) {
+        alert("Le navigateur a bloqué l'ouverture du mode d'emploi. Autorise les pop-ups pour l'afficher.");
+        return;
+      }
+
+      fenetreModeEmploi.document.open();
+      fenetreModeEmploi.document.write(contenuModeEmploi());
+      fenetreModeEmploi.document.close();
+      fenetreModeEmploi.focus();
     }
 
     if (undoBtn) undoBtn.addEventListener("click", restaurerDerniereAction);
+    if (modeEmploiBtn) modeEmploiBtn.addEventListener("click", ouvrirModeEmploi);
 
 
-    ["libelleChoix1", "libelleChoix2"].forEach(id => {
+    ["libelleChoix1", "libelleChoix2", "libelleChoix3"].forEach(id => {
       const champ = document.getElementById(id);
       if (champ) {
         champ.addEventListener("change", () => {
@@ -1370,6 +1806,21 @@
           reinitialiserPlanning();
         });
       }
+    });
+
+
+    [
+      "classe", "anneeScolaire", "etablissement", "epreuve",
+      "date1", "date1MatinDebut", "date1MatinFin", "date1ApremDebut", "date1ApremFin",
+      "date2", "date2MatinDebut", "date2MatinFin", "date2ApremDebut", "date2ApremFin",
+      "date3", "date3MatinDebut", "date3MatinFin", "date3ApremDebut", "date3ApremFin",
+      "date4", "date4MatinDebut", "date4MatinFin", "date4ApremDebut", "date4ApremFin",
+      "dureeEleveMinutes", "pauseMinutes", "elevesAvantPause",
+      "libelleChoix1", "libelleChoix2", "libelleChoix3", "prioritePlanning"
+    ].forEach(id => {
+      const champ = document.getElementById(id);
+      if (champ) champ.addEventListener("input", mettreAJourSyntheseDirecte);
+      if (champ) champ.addEventListener("change", mettreAJourSyntheseDirecte);
     });
 
     planningBtn.addEventListener("click", genererPlanning);
@@ -1390,13 +1841,15 @@
 
       doc.setFontSize(12);
       doc.setFont(undefined, "normal");
-          doc.setFontSize(10);
-          doc.setFont(undefined, "bold");
-          doc.text("Lycée Agricole du Bourbonnais", 148.5, 28, { align: "center" });
-          doc.setFont(undefined, "normal");
-          doc.setFontSize(10);
-          doc.text(`Classe : ${params.classe || ""}`, 200, 12);
-          doc.text(`Année scolaire : ${params.anneeScolaire || ""}`, 200, 20);
+      if (params.etablissement) {
+        doc.setFontSize(10);
+        doc.setFont(undefined, "bold");
+        doc.text(params.etablissement, 14, 22);
+      }
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(10);
+      doc.text(`Classe : ${params.classe || ""}`, 200, 12);
+      doc.text(`Année scolaire : ${params.anneeScolaire || ""}`, 200, 20);
 
           doc.setTextColor(31, 41, 55);
           doc.setFont(undefined, "normal");
@@ -1429,7 +1882,11 @@ let y = 30;
 
         doc.autoTable({
           startY: y + 6,
-          head: [["Date", "Heure", "Élève", "Statut", "Matière", "Émargement"]],
+          pageBreak: "auto",
+          rowPageBreak: "avoid",
+          showHead: "everyPage",
+          margin: { top: 12, right: 14, bottom: 12, left: 14 },
+          head: [["Date", "Heure", "Apprenant", "Statut", "Option", "Émargement"]],
           body: planningParDate[date]
             .filter(p => p.nom && p.nom.trim() !== "")
             .map(p => [
@@ -1479,6 +1936,8 @@ let y = 30;
 
     const epreuveInput = document.getElementById("epreuve");
     if (epreuveInput) epreuveInput.addEventListener("input", mettreAJourTitresEpreuve);
+    const etablissementInput = document.getElementById("etablissement");
+    if (etablissementInput) etablissementInput.addEventListener("input", mettreAJourTitresEpreuve);
     mettreAJourTitresEpreuve();
 
     downloadBtn.addEventListener("click", () => {
